@@ -1,0 +1,81 @@
+from flask import jsonify, request
+import psycopg2
+import os
+
+database_name = os.environ.get('DATABASE_NAME')
+
+conn = psycopg2.connect(f"dbname={database_name}")
+cursor = conn.cursor()
+
+def create_category():
+    post_data = request.form if request.form else request.json
+
+    category_name = post_data.get('category_name')
+
+    if not category_name:
+        return jsonify({'message': 'category name required'}), 400
+
+    cursor.execute("""
+        SELECT * FROM Categories
+        WHERE category_name = %s
+    """, (category_name,))
+
+    existing_category = cursor.fetchone()
+
+    if existing_category:
+        return jsonify({"message": "category already exists"}), 400
+
+    try:
+        cursor.execute("""
+            INSERT INTO Categories (
+                category_name
+            ) VALUES (
+                %s
+            )
+        """, (category_name,))
+
+        conn.commit()
+
+    except:
+        conn.rollback()
+        return jsonify({'message': 'category could not be added'}), 400
+
+    return jsonify({
+        "message": f"category {category_name} has been added to the database"
+    }), 201
+
+def get_categories():
+    cursor.execute("""SELECT * FROM Categories;""")
+    results = cursor.fetchall()
+
+    categories_list = []
+
+    for record in results:
+        category_record = {
+            'category_id': record[0],
+            'category_name': record[1]
+        }
+
+        categories_list.append(category_record)
+
+    return jsonify({"message": "categories found", "results": categories_list}),200
+
+def get_category_by_id(category_id):
+
+    cursor.execute("""
+        SELECT *
+        FROM Categories
+        WHERE category_id = %s
+    """, (category_id,))
+
+    category = cursor.fetchone()
+
+    if not category:
+        return jsonify({"message": "category not found"}), 404
+
+    category_record = {
+        "category_id": category[0],
+        "category_name": category[1]
+    }
+
+    return jsonify({"message": "categories found", "results": category_record}),200

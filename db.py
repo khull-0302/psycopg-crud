@@ -13,16 +13,16 @@ def create_all():
 
     cursor.execute("""
                    CREATE TABLE IF NOT EXISTS Companies (
-                   company_id UUID PRIMARY KEY,
+                   company_id SERIAL PRIMARY KEY,
                    company_name VARCHAR UNIQUE NOT NULL);
                    
                    CREATE TABLE IF NOT EXISTS Categories (
-                   category_id UUID PRIMARY KEY,
+                   category_id SERIAL PRIMARY KEY,
                    category_name VARCHAR UNIQUE NOT NULL);
                    
                    CREATE TABLE IF NOT EXISTS Products (
-                   product_id UUID PRIMARY KEY,
-                   company_id UUID NOT NULL,
+                   product_id SERIAL PRIMARY KEY,
+                   company_id INTEGER NOT NULL,
                    product_name VARCHAR UNIQUE NOT NULL,
                    price FLOAT,
                    description VARCHAR,
@@ -30,14 +30,14 @@ def create_all():
                    FOREIGN KEY (company_id) REFERENCES Companies(company_id));
                    
                    CREATE TABLE IF NOT EXISTS Warranties (
-                   warranty_id UUID PRIMARY KEY,
-                   product_id UUID NOT NULL,
+                   warranty_id SERIAL PRIMARY KEY,
+                   product_id INTEGER NOT NULL,
                    warranty_months INTEGER NOT NULL,
                    FOREIGN KEY (product_id) REFERENCES Products(product_id));
                    
                    CREATE TABLE IF NOT EXISTS ProductsCategoriesXref (
-                   product_id UUID NOT NULL,
-                   category_id UUID NOT NULL,
+                   product_id INTEGER NOT NULL,
+                   category_id INTEGER NOT NULL,
                    PRIMARY KEY (product_id, category_id),
                    FOREIGN KEY (product_id) REFERENCES Products(product_id),
                    FOREIGN KEY (category_id) REFERENCES Categories(category_id)

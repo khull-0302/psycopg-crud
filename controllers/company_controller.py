@@ -23,19 +23,10 @@ def create_company():
         return jsonify({"message": "Company already exists"}),400
     
     
-    cursor.execute("""
-                INSERT INTO Companies (
-                company_name
-                
-            ) VALUES (
-                %s
-                )
-            """, (company_name,))
+    cursor.execute("""INSERT INTO Companies (company_name) VALUES (%s)""", (company_name,))
     conn.commit()
 
     
-
-
     return jsonify({"message": f"Company {company_name} has been added to the database"}),201
 
 def get_all_companies():
@@ -67,4 +58,4 @@ def get_company(company_id):
         'company_name': result[1]
         }
 
-    return jsonify({"message": "company found", "results": company_record}),200
+    return jsonify({"message": "company found", "result": company_record}),200

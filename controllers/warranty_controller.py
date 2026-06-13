@@ -19,20 +19,34 @@ def create_warranty():
     if not warranty_months:
         return jsonify({'message': 'warranty_months required'}), 400
 
+    cursor.execute("""
+        SELECT * FROM Warranties
+        WHERE product_id = %s
+    """, (product_id,))
+
+    existing = cursor.fetchone()
+
+    if existing:
+        return jsonify({
+            "message": "warranty already exists for this product"
+        }), 400
+
     try:
         cursor.execute("""
             INSERT INTO Warranties (
-                       product_id,
-                       warranty_months
-                       ) VALUES (
-                       %s,
-                       %s
-                       )
-                       """, (product_id, warranty_months,))
+                product_id,
+                warranty_months
+            ) VALUES (
+                %s,
+                %s
+            )
+        """, (product_id, warranty_months))
 
         conn.commit()
 
-        return jsonify({"message": f"warranty for product_id {product_id} has been created"}),201
+        return jsonify({
+            "message": f"warranty for product_id {product_id} has been created"
+        }), 201
 
     except:
         conn.rollback()
@@ -57,5 +71,5 @@ def get_warranty(warranty_id):
 
     return jsonify({
         "message": "warranty found",
-        "results": warranty_record
+        "result": warranty_record
     }), 200

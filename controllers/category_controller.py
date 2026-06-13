@@ -62,11 +62,7 @@ def get_categories():
 
 def get_category_by_id(category_id):
 
-    cursor.execute("""
-        SELECT *
-        FROM Categories
-        WHERE category_id = %s
-    """, (category_id,))
+    cursor.execute("""SELECT * FROM Categories WHERE category_id = %s""", (category_id,))
 
     category = cursor.fetchone()
 
@@ -78,4 +74,4 @@ def get_category_by_id(category_id):
         "category_name": category[1]
     }
 
-    return jsonify({"message": "categories found", "results": category_record}),200
+    return jsonify({"message": "category found", "result": category_record}),200

@@ -68,7 +68,6 @@ def get_all_products():
 
         warranty = cursor.fetchone()
 
-        
         if warranty:
             warranty_record = {
                 'warranty_id': warranty[0],
@@ -135,9 +134,7 @@ def get_active_products():
 def get_product_by_id(product_id):
 
     cursor.execute("""
-        SELECT * FROM Products
-        WHERE product_id = %s
-    """, (product_id,))
+        SELECT * FROM Products WHERE product_id = %s""", (product_id,))
 
     product = cursor.fetchone()
 
@@ -172,10 +169,7 @@ def get_product_by_id(product_id):
         'categories': category_list
     }
 
-    return jsonify({
-        "message": "product found",
-        "result": product_record
-    }), 200
+    return jsonify({"message": "product found", "result": product_record}), 200
 
 def create_product_category():
     post_data = request.form if request.form else request.json

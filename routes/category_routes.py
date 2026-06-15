@@ -15,3 +15,6 @@ def get_categories_route():
 def get_category_by_id_route(category_id):
     return controllers.get_category_by_id(category_id)
 
+@category.route('/category/<category_id>', methods=['PATCH'])
+def update_category_by_id_route(category_id):
+    return controllers.update_category_by_id(category_id)

@@ -15,3 +15,9 @@ def get_companies_route():
 def get_company_route(company_id):
     return controllers.get_company(company_id)
 
+@company.route('/company/<company_id>', methods=['PATCH'])
+def update_company_by_id_route(company_id):
+    return controllers.update_company_by_id(company_id)
+
+
+

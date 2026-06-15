@@ -73,3 +73,50 @@ def get_warranty(warranty_id):
         "message": "warranty found",
         "result": warranty_record
     }), 200
+
+def update_warranty_by_id(warranty_id):
+    post_data = request.get_json(silent=True) or request.form
+    warranty_id = int(warranty_id)
+
+    cursor.execute(
+        "SELECT * FROM Warranties WHERE warranty_id = %s",
+        (warranty_id,)
+    )
+
+    existing_warranty = cursor.fetchone()
+
+    if not existing_warranty:
+        return jsonify({"message": "warranty not found"}), 404
+
+    product_id = post_data.get('product_id', existing_warranty[1])
+    warranty_months = post_data.get('warranty_months', existing_warranty[2])
+
+    cursor.execute(
+        """
+        UPDATE Warranties
+        SET product_id = %s,
+            warranty_months = %s
+        WHERE warranty_id = %s
+        """,
+        (product_id, warranty_months, warranty_id)
+    )
+
+    conn.commit()
+
+    cursor.execute(
+        "SELECT * FROM Warranties WHERE warranty_id = %s",
+        (warranty_id,)
+    )
+
+    result = cursor.fetchone()
+
+    warranty_record = {
+        "warranty_id": result[0],
+        "product_id": result[1],
+        "warranty_months": result[2]
+    }
+
+    return jsonify({
+        "message": "warranty updated",
+        "result": warranty_record
+    }), 200

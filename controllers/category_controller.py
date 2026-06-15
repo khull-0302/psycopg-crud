@@ -75,3 +75,39 @@ def get_category_by_id(category_id):
     }
 
     return jsonify({"message": "category found", "result": category_record}),200
+
+def update_category_by_id(category_id):
+    post_data = request.form if request.form else request.json
+    category_id = int(category_id)
+
+    cursor.execute(
+        "SELECT * FROM Categories WHERE category_id = %s",
+        (category_id,)
+    )
+
+    existing_category = cursor.fetchone()
+
+    if not existing_category:
+        return jsonify({"message": "category not found"}), 404
+    
+    category_name = post_data.get('category_name')
+
+    cursor.execute("""UPDATE Categories SET 
+                   category_name = %s
+                   WHERE category_id = %s""",
+                   (category_name, category_id))
+    conn.commit()
+
+    cursor.execute(
+        "SELECT * FROM Categories WHERE category_id = %s",
+        (category_id,)
+    )
+
+    result = cursor.fetchone()
+
+    category_record = {
+            'category_id': result[0],
+            'category_name': result[1]
+        }    
+
+    return jsonify({"message": "category updated", "result": category_record}), 200

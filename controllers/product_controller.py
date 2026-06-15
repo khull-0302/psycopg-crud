@@ -171,6 +171,36 @@ def get_product_by_id(product_id):
 
     return jsonify({"message": "product found", "result": product_record}), 200
 
+def get_product_by_company_id(company_id):
+
+    cursor.execute("""SELECT * FROM Products WHERE company_id = %s""", (company_id,))
+    
+    products = cursor.fetchall()
+
+    if not products:
+        return jsonify({"message": "products not found"}), 404
+    
+    products_list = []
+
+    for product in products:
+
+        product_record = {
+            'product_id': product[0],
+            'company_id': product[1],
+            'product_name': product[2],
+            'price': product[3],
+            'description': product[4],
+            'active': product[5]
+        }
+
+        products_list.append(product_record)
+
+    return jsonify({
+        "message": "products found",
+        "results": products_list
+    }), 200
+
+
 def create_product_category():
     post_data = request.form if request.form else request.json
 

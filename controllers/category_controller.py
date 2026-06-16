@@ -111,3 +111,40 @@ def update_category_by_id(category_id):
         }    
 
     return jsonify({"message": "category updated", "result": category_record}), 200
+
+def delete_category(category_id):
+    category_id = int(category_id)
+
+    cursor.execute(
+        "SELECT * FROM Categories WHERE category_id = %s",
+        (category_id,)
+    )
+
+    existing_category = cursor.fetchone()
+
+    if not existing_category:
+        return jsonify({"message": "category not found"}), 404
+
+    try:
+        # delete xref records first
+        cursor.execute(
+            "DELETE FROM ProductsCategoriesXref WHERE category_id = %s",
+            (category_id,)
+        )
+
+        # delete category
+        cursor.execute(
+            "DELETE FROM Categories WHERE category_id = %s",
+            (category_id,)
+        )
+
+        conn.commit()
+
+    except:
+        conn.rollback()
+        return jsonify({"message": "category could not be deleted"
+        }), 400
+
+    return jsonify({
+        "message": f"category {category_id} deleted successfully"
+    }), 200

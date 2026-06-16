@@ -97,4 +97,54 @@ def update_company_by_id(company_id):
     return jsonify({"message": "company updated", "result": company_record}), 200
 
 
+def delete_company(company_id):
+    company_id = int(company_id)
+
+    cursor.execute(
+        "SELECT * FROM Companies WHERE company_id = %s",
+        (company_id,)
+    )
+
+    existing_company = cursor.fetchone()
+
+    if not existing_company:
+        return jsonify({"message": "company not found"}), 404
+
+    cursor.execute(
+        "SELECT product_id FROM Products WHERE company_id = %s",
+        (company_id,)
+    )
+
+    products = cursor.fetchall()
+
+    for product in products:
+        product_id = product[0]
+
+        cursor.execute(
+            "DELETE FROM ProductsCategoriesXref WHERE product_id = %s",
+            (product_id,)
+        )
+
+        cursor.execute(
+            "DELETE FROM Warranties WHERE product_id = %s",
+            (product_id,)
+        )
+
+    cursor.execute(
+        "DELETE FROM Products WHERE company_id = %s",
+        (company_id,)
+    )
+
+    cursor.execute(
+        "DELETE FROM Companies WHERE company_id = %s",
+        (company_id,)
+    )
+
+    conn.commit()
+
+    return jsonify({
+        "message": f"company {existing_company[1]} deleted"
+    }), 200
+
+
 

@@ -120,3 +120,34 @@ def update_warranty_by_id(warranty_id):
         "message": "warranty updated",
         "result": warranty_record
     }), 200
+
+def delete_warranty(warranty_id):
+    warranty_id = int(warranty_id)
+
+    cursor.execute(
+        "SELECT * FROM Warranties WHERE warranty_id = %s",
+        (warranty_id,)
+    )
+
+    existing_warranty = cursor.fetchone()
+
+    if not existing_warranty:
+        return jsonify({"message": "warranty not found"}), 404
+
+    try:
+        cursor.execute(
+            "DELETE FROM Warranties WHERE warranty_id = %s",
+            (warranty_id,)
+        )
+
+        conn.commit()
+
+    except:
+        conn.rollback()
+        return jsonify({
+            "message": "warranty could not be deleted"
+        }), 400
+
+    return jsonify({
+        "message": f"warranty {warranty_id} deleted successfully"
+    }), 200

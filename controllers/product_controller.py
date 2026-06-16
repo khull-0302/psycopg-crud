@@ -68,7 +68,9 @@ def get_all_products():
 
         warranty = cursor.fetchone()
 
-        if warranty:
+        warranty_record = None
+
+        if warranty is not None:
             warranty_record = {
                 'warranty_id': warranty[0],
                 'product_id': warranty[1],
@@ -309,6 +311,16 @@ def delete_product(product_id):
         return jsonify({"message": "product not found"}), 404
 
     try:
+        cursor.execute(
+            "DELETE FROM ProductsCategoriesXref WHERE product_id = %s",
+            (product_id,)
+        )
+
+        cursor.execute(
+            "DELETE FROM Warranties WHERE product_id = %s",
+            (product_id,)
+        )
+
         cursor.execute(
             "DELETE FROM Products WHERE product_id = %s",
             (product_id,)

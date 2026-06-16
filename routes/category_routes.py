@@ -18,3 +18,7 @@ def get_category_by_id_route(category_id):
 @category.route('/category/<category_id>', methods=['PATCH'])
 def update_category_by_id_route(category_id):
     return controllers.update_category_by_id(category_id)
+
+@category.route('/category/delete/<category_id>', methods=['DELETE'])
+def delete_category_route(category_id):
+    return controllers.delete_category(category_id)
